@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+		<title>Frequency Response of the Ear</title>
+		<meta charset="utf-8">
+		
+		<meta content="width=device-width" name="viewport"><script src="files/defaults.js"></script>
+		<script src="files/color.js"></script>
+		<!-- <script src="files/tabs1.js"></script> -->
+		<!-- <script src="files/font.js"></script> -->
+		<!-- <script src="files/button.js"></script> -->
+		<script src="files/slider.js"></script>
+		<script src="files/io.js"></script>
+		<script src="files/timbre.js"></script>
+		<script src="files/soundConst.js"></script>
+		<script src="files/playPause.js"></script>
+		<script src="files/resizeCanvas.js"></script>
+		<script src="files/graphConst.js"></script>
+		<script src="files/draw.js"></script>
+		<script src="files/barGraph.js"></script>
+		<script src="files/freqEarCh10.js"></script>
+		<script src="files/illustration.js"></script>
+		
+	
+		<link href="files/RichWebSP.css" rel="stylesheet">
+		
+
+	<link rel="stylesheet" href="files/css.css"></head>
+<body>
+	
+	<div id="bodyPage">
+		
+		<div id="wrapper">
+		  <div id="tabContainer">
+		    
+		    <div id="tabscontent">
+		      
+		      
+		      <div class="tabpage" id="tabpage_3" style="display: block;">
+		      	<canvas id="plotCanvas" class="allowControls" width="969" height="721" style="display: block; float: left;">   </canvas>
+		      	<span class="controls">
+				<p class="UI_top">
+					</p><form>
+						<input type="button" id="reset" value="Reset" alt="Reset">
+						<input type="button" id="hand" value="Left Handed" css="visibility: hidden">
+						<input type="hidden" id="handDef" value="right">
+					</form>
+					<span id="modelControl"><strong name="text">Alter Parameters of the Sound Wave Here</strong><br><span><input type="button" value="Play"></span>  <input type="button" value="Adjust"><br><span></span><br><span class="controlLabel"><span><strong class="controlLabel">Frequency (Hz):</strong> </span><input type="radio" name="whatfreq" value="125" style="cursor: pointer;" checked="checked"><strong name="controlLabel" style="cursor: pointer;"> 125 </strong>  <input type="radio" name="whatfreq" value="250" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 250 </strong>  <input type="radio" name="whatfreq" value="500" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 500 </strong>  <input type="radio" name="whatfreq" value="1000" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 1000 </strong>  <input type="radio" name="whatfreq" value="2000" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 2000 </strong>  <input type="radio" name="whatfreq" value="4000" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 4000 </strong>  <input type="radio" name="whatfreq" value="8000" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 8000 </strong>  <input type="radio" name="whatfreq" value="10000" style="cursor: pointer;"><strong name="controlLabel" style="cursor: pointer;"> 10000 </strong>  </span><br><span></span><br><br><p class="paragraphs"></p></span>
+				<p></p>
+				<span id="plotVal"> <span></span><span><a class="downloadLink dragout" download="myData.csv" href="blob:https://isle.hanover.edu/490456d8-b611-4ecc-9f7b-817f7e8b11ba" data-downloadurl="text/plain:myData.csv:blob:https://isle.hanover.edu/490456d8-b611-4ecc-9f7b-817f7e8b11ba" draggable="true">Download Data</a></span><span></span><span><a class="downloadLink dragout" download="myData.csv" href="blob:null/351fbd92-8cb3-42c5-b389-432b746d99e5" data-downloadurl="text/plain:myData.csv:blob:null/351fbd92-8cb3-42c5-b389-432b746d99e5" draggable="true">Download Data</a></span></span>
+				<p id="plotExp" class="paragraphs">Use the <em>Adjust</em> button 
+and the slider that appears to adjust the sound following the 
+directions. The select a frequency and press play.  Count how many of 
+the steps you can hear. When done, enter the number of steps you heard 
+and the data will be entered into the bar graph. When you have done all 
+of the frequencies, you will have map of how your sensitivity changes 
+depending upon frequency.  Press the <em>Show Data</em> button to see the data values. </p>
+			    	<script>
+			      		var illustration = new Figure(new FreqEarCh10("modelControl"),
+								      				new Bar_Graph("plotCanvas","plotExp","plotVal")); // send method stimulus, and container to respond to
+						illustration.setupListener("reset");
+						illustration.init();
+						// control handedness
+						var handedness = new Handedness("plotCanvas","hand", "handDef");
+		    	  	</script>		    	  	<p class="afterIllustration"> </p>
+		      	</span>
+		      </div>
+		      
+			</div>
+		  </div>
+		</div>
+	</div>
+
+</body></html>

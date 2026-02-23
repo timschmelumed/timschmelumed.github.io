@@ -1,0 +1,268 @@
+body {
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v10/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+	margin-left:5px;
+    touch-action: pan-y; /* allow vertical panning only */
+}
+
+h2{ 
+	margin-bottom:0px;
+	margin-top : 0px;
+}
+
+li {
+	font-size: 14px;
+}
+
+ul {
+	list-style-type: none;
+}
+
+table.TextCover {
+	table-layout:fixed;
+	background-color: rgb(255,255,255);
+}
+
+tr.TextCover {
+	background-color: rgb(255,255,255);
+}
+
+td.TextCover {
+	background-color: rgb(255,255,255);
+}
+
+ol {
+	color: rgb(255,127,50);
+}
+
+em.head3 {
+	font-size : 1.2em;
+	font-style : normal;
+	font-weight : bold;
+}
+
+em.setEm {
+	font-style : italic;
+	font-weight : bold;
+}
+
+em.buttonEm {
+	font-style : oblique;
+	font-weight : bolder;
+	
+}
+
+#headerISLE {
+	text-align : left;
+	font-size: 0.8em;
+}
+
+#ActivityList {
+	
+}
+
+#canvas {
+	text-align : center;
+	margin-left  : auto;
+	margin-right : auto;
+}
+
+canvas.allowControls {
+	float : left;
+}
+
+p.afterIllustration {
+	clear : both;
+}
+
+p.video_p {
+}
+
+p.bulleted{
+	margin-left : 25px;
+	text-indent : -9px; 
+	margin-bottom : 0px;
+}
+
+.video {
+	vertical-align:text-top;
+}
+
+.mediaAlign {
+	vertical-align:top;
+}
+
+span.resultVal {
+	font-size : 1.2em;
+	font-style : normal;
+	font-weight : bold;
+	color:#ff0000;
+	background-color:rgb(255,255,255);
+}
+
+span.enabled {
+	background-color:rgb(255,255,255);
+}
+span.unenabled {
+	background-color:rgb(127127,127);
+}
+
+p.paragraphs {
+	text-indent: 0.5in;
+	margin-bottom: 0.1in;
+}
+
+canvas.sliderControl {
+	position:relative;
+}
+
+.controlLabel {
+	background-color:rgb(220,220,220);
+}
+
+.controlLabelUnenabled {
+	background-color:rgb(100,100,100);
+}
+.control {
+	font-size : 16px;
+}
+
+p.UI_top {
+	text-align : center;
+	margin-left  : auto;
+	margin-right : auto;
+}
+
+.UI_right {
+	position:absolute;
+	right:0px;
+	width:200px;
+	background-color:#b0e0e6;
+}
+
+table.backTable {
+	border-collapse:collapse;
+	display: inline;
+}
+td.tableCell {
+	border : 1px solid black;
+	text-align:center;
+}
+th.tableHeader {
+	border : 1px solid black;
+	text-align:center;
+}
+table.dataTable {
+	border-collapse:collapse;
+	display: inline;
+	vertical-align: top;
+}
+th.dataHeader{
+	border : 1px solid black;
+	text-align:center;
+}
+td.dataCell {
+	border : 1px solid black;
+	text-align:center;
+}
+
+tr.mainRow {
+	border-collapse:collapse;
+	vertical-align: top;
+}
+span.hide {
+	color: #ffffff;
+}
+
+.textLeft {
+	text-align:justify;
+}
+
+#settings {
+	margin-left : 10px;
+}
+
+#pic {
+	text-align : center;
+}
+
+#picTag {
+	border-style:solid;
+	border-width:1px;
+}
+
+.linkGroup {
+	font-style:italic;
+	font-weight:400;
+	font-size:1.2em;
+}
+
+.makeLink {
+	font-size:1.2em;
+	color:rgb(50,50,50) !important;
+	text-decoration:none !important;
+	display:inline !important;
+	padding-top:0px !important;
+	text-align:inherit !important;
+}
+
+.downloadLink {
+	font-size:1.2em;
+	color:rgb(50,50,238) !important;
+	text-decoration:none !important;
+	display:inline !important;
+	padding-top:0px !important;
+	text-align:inherit !important;
+}
+
+.player75 {
+	width:75%; !important
+}
+
+#banner {
+	height:120px;
+}
+#banner2 {
+	height: 5px;
+}
+#chaplist {
+	width:224px;
+}
+
+img.right {
+    float: right;
+}
+img.left {
+	float: left;
+}
+img.bottom {
+    vertical-align: text-bottom;
+}
+img.middle {
+    vertical-align: middle;
+}
+.breadcrumbs {
+	font-size:1.05em;
+	color:rgb(63,63,63);
+	text-decoration:none;
+}
+a.crumblink {
+	color:rgb(50,50,50);
+	text-decoration:none;
+}
+
+em.curpage {
+	font-size:1.2em;
+	color: rgb(255,127,50);
+}
+em.names {
+	font-size:0.8em;
+}
+
+.bodyLabel {
+	font-size:1.2em;
+	font-weight:bold;
+}
+
