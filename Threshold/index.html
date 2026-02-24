@@ -32,7 +32,7 @@
 			let oscillator = null;
 			let gainNode = null;
 
-			function startTone(frequencyHz = 1200, dBFS = -10) {
+			function startTone(frequencyHz = 1000, dBFS = -20) {
 			  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 			  oscillator = audioCtx.createOscillator();
@@ -64,7 +64,7 @@
 			setTimeout(() => {
 				document.getElementById('tone').addEventListener('click', function() {
 				  if (!oscillator) {
-				    startTone(1000, -20);
+				    startTone(1200, -10);
 				    this.textContent = 'Stop Tone';
 				  } else {
 				    stopTone();
