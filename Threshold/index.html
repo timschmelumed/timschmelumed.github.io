@@ -32,7 +32,7 @@
 			let oscillator = null;
 			let gainNode = null;
 
-			function startTone(frequencyHz = 1500, dBFS = -20) {
+			function startTone(frequencyHz = 1200, dBFS = -10) {
 			  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 			  oscillator = audioCtx.createOscillator();
