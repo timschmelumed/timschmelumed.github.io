@@ -1,0 +1,370 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: var(--color-text-primary); --muted: var(--color-text-secondary); --hint: var(--color-text-tertiary);
+  --surface: var(--color-background-secondary); --card: var(--color-background-primary);
+  --border: var(--color-border-tertiary); --accent: #E8593C; --accent2: #3B8BD4;
+}
+body { font-family: 'DM Sans', sans-serif; padding: 0; }
+.app { padding: 1.5rem 1rem 2rem; display: flex; flex-direction: column; gap: 1rem; }
+h1 { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: var(--muted); }
+.instrument-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.inst-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.inst-btn:hover { border-color: var(--color-border-secondary); background: var(--card); }
+.inst-btn.active { border: 1.5px solid var(--accent); background: var(--card); }
+.inst-icon { font-size: 22px; line-height: 1; }
+.inst-name { font-size: 11px; color: var(--muted); font-weight: 500; text-align: center; }
+.inst-btn.active .inst-name { color: var(--accent); }
+.waveform-container { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+canvas.wave { width: 100%; display: block; height: 110px; }
+.piano-wrap { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; user-select: none; }
+.piano-inner { display: flex; position: relative; height: 80px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.piano-inner::-webkit-scrollbar { display: none; }
+.white-key { width: 36px; height: 80px; background: var(--card); border: 0.5px solid var(--border); border-top: none; border-radius: 0 0 5px 5px; cursor: pointer; position: relative; flex-shrink: 0; transition: background 0.07s; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; }
+.white-key:hover { background: #f0ede8; }
+.white-key.pressed { background: var(--accent) !important; }
+.key-label { font-size: 9px; color: var(--hint); font-family: 'Space Mono', monospace; pointer-events: none; }
+.white-key.pressed .key-label { color: white; }
+.black-key { width: 22px; height: 50px; background: var(--ink); border-radius: 0 0 4px 4px; cursor: pointer; position: absolute; z-index: 2; top: 0; transition: background 0.07s, opacity 0.07s; opacity: 0.85; }
+.black-key:hover { opacity: 1; }
+.black-key.pressed { background: var(--accent) !important; opacity: 1; }
+.build-sliders { display: flex; flex-direction: column; gap: 8px; }
+.slider-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 8px; }
+.sl-label { font-size: 12px; font-weight: 500; color: var(--ink); min-width: 70px; }
+.sl-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); min-width: 46px; text-align: right; }
+.period-container { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+canvas.period { width: 100%; display: block; height: 110px; }
+.section-label { font-size: 11px; color: var(--hint); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; padding: 0 2px; }
+.adsr-container { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+canvas.adsr { width: 100%; display: block; height: 130px; }
+.info-card { padding: 12px 14px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; }
+.info-label { font-size: 11px; color: var(--hint); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+</style>
+
+<div class="app">
+  <div>
+    <h1>Timbre Explorer</h1>
+    <p class="subtitle">Discover why instruments sound different — same pitch, different colour</p>
+  </div>
+
+  <div class="instrument-grid">
+    <button class="inst-btn active"  data-inst="sine"     onclick="selectInstrument(this)"><span class="inst-icon">〜</span><span class="inst-name">Sine Tone</span></button>
+    <button class="inst-btn"         data-inst="square"   onclick="selectInstrument(this)"><span class="inst-icon">▬</span><span class="inst-name">Square</span></button>
+    <button class="inst-btn"         data-inst="sawtooth" onclick="selectInstrument(this)"><span class="inst-icon">⋀</span><span class="inst-name">Sawtooth</span></button>
+    <button class="inst-btn"         data-inst="violin"   onclick="selectInstrument(this)"><span class="inst-icon">🎻</span><span class="inst-name">Violin</span></button>
+    <button class="inst-btn"         data-inst="flute"    onclick="selectInstrument(this)"><span class="inst-icon">🪈</span><span class="inst-name">Flute</span></button>
+    <button class="inst-btn"         data-inst="clarinet" onclick="selectInstrument(this)"><span class="inst-icon">🎵</span><span class="inst-name">Clarinet</span></button>
+    <button class="inst-btn"         data-inst="trumpet"  onclick="selectInstrument(this)"><span class="inst-icon">🎺</span><span class="inst-name">Trumpet</span></button>
+    <button class="inst-btn"         data-inst="oboe"     onclick="selectInstrument(this)"><span class="inst-icon">🎶</span><span class="inst-name">Oboe</span></button>
+  </div>
+
+  <div class="waveform-container"><canvas class="wave" id="waveCanvas"></canvas></div>
+  <div class="piano-wrap"><div class="piano-inner" id="pianoInner"></div></div>
+  <div class="build-sliders" id="buildSliders"></div>
+  <div class="period-container"><canvas class="period" id="periodCanvas"></canvas></div>
+  <div class="section-label">Envelope (ADSR)</div>
+  <div class="build-sliders" id="adsrSliders"></div>
+  <div class="adsr-container"><canvas class="adsr" id="adsrCanvas"></canvas></div>
+  <div class="info-card">
+    <div class="info-label">What you're hearing</div>
+    <div class="info-text" id="infoText">A pure sine wave — just one frequency, no overtones. The simplest possible sound: smooth, almost clinical. Real instruments are richer because they add overtones (harmonics) on top.</div>
+  </div>
+</div>
+
+<script>
+let audioCtx=null,analyser=null,animId=null,currentInstrument='sine',activeNotes={};
+
+function pad(arr){const a=[...arr];while(a.length<16)a.push(0);return a;}
+
+const instrumentData={
+  sine:     { harmonics:pad([1]),
+              color:'#888780',adsr:{a:0,d:0,s:1,r:0},
+              desc:'A pure sine wave — just one frequency, no overtones. The simplest possible sound: smooth, almost clinical. Real instruments are richer because they add overtones (harmonics) on top.' },
+  square:   { harmonics:[1,0,1/3,0,1/5,0,1/7,0,1/9,0,1/11,0,1/13,0,1/15,0],
+              color:'#534AB7',adsr:{a:0,d:0,s:1,r:0},
+              desc:'A square wave contains only odd harmonics at precise ratios (1, 1/3, 1/5…). This is the waveform that gave early video game music its characteristic buzzy, hollow sound.' },
+  sawtooth: { harmonics:[1,1/2,1/3,1/4,1/5,1/6,1/7,1/8,1/9,1/10,1/11,1/12,1/13,1/14,1/15,1/16],
+              color:'#993C1D',adsr:{a:0,d:0,s:1,r:0},
+              desc:'The sawtooth wave contains all harmonics at decreasing amplitudes (1, 1/2, 1/3…). This gives it the fullest, brightest harmonic spectrum of any periodic waveform.' },
+  violin:   { harmonics:[0.50,0.75,1.00,0.56,0.50,0.33,0.41,0.50,0.41,0.31,0.37,0.27,0.17,0.25,0.15,0.07],
+              color:'#E8593C',adsr:{a:120,d:80,s:0.8,r:250},
+              desc:'The violin peaks at the 3rd harmonic rather than the fundamental, with energy spread broadly across the spectrum. This rich, uneven distribution is what gives the violin its complex, singing, almost vocal tone.' },
+  flute:    { harmonics:[1.00,0.90,0.10,0.08,0.07,0.05,0.04,0.04,0.03,0.03,0.03,0.02,0.02,0.01,0.02,0.01],
+              color:'#1D9E75',adsr:{a:80,d:40,s:0.75,r:150},
+              desc:'The flute is dominated by just the first two harmonics — the fundamental and its octave — with everything else very quiet. This gives it that pure, breathy, open tone with very little edge or brightness.' },
+  clarinet: { harmonics:[1.00,0.20,0.90,0.39,0.75,0.10,0.55,0.09,0.43,0.15,0.30,0.02,0.21,0.00,0.10,0.00],
+              color:'#3B8BD4',adsr:{a:30,d:20,s:0.9,r:80},
+              desc:'The clarinet strongly favours odd harmonics (1st, 3rd, 5th…) due to its cylindrical bore and single reed, giving it that distinctive hollow, woody character.' },
+  trumpet:  { harmonics:[0.65,1.00,0.60,0.56,0.40,0.20,0.45,0.30,0.25,0.15,0.28,0.15,0.20,0.14,0.15,0.17],
+              color:'#BA7517',adsr:{a:40,d:80,s:0.85,r:180},
+              desc:'The trumpet\'s 2nd harmonic is actually stronger than the fundamental, and it retains energy well into the upper partials. This gives it that powerful, cutting, brilliant tone.' },
+  oboe:     { harmonics:[0.60,0.49,0.80,1.00,0.70,0.56,0.68,0.57,0.29,0.16,0.11,0.50,0.11,0.17,0.08,0.24],
+              color:'#993556',adsr:{a:40,d:60,s:0.85,r:120},
+              desc:'The oboe has a remarkably complex harmonic profile — the 4th harmonic peaks above the fundamental, and energy is distributed unevenly across the spectrum, producing that distinctive nasal, penetrating tone.' },
+};
+
+let buildAmps=[...instrumentData.sine.harmonics];
+let adsr={...instrumentData.sine.adsr};
+
+const harmNames=Array.from({length:16},(_,i)=>{
+  const n=i+1,s=['th','st','nd','rd'],v=n%100;
+  return n+(s[(v-20)%10]||s[v]||s[0])+' harmonic';
+});
+harmNames[0]='1st (fundamental)';
+
+const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const IS_BLACK=[false,true,false,true,false,false,true,false,true,false,true,false];
+const BLACK_OFFSETS={1:0.67,3:1.67,6:3.67,8:4.67,10:5.67};
+function midiToFreq(m){return 440*Math.pow(2,(m-69)/12);}
+
+function buildPiano(){
+  const container=document.getElementById('pianoInner');
+  container.innerHTML='';
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='position:relative;display:flex;flex-shrink:0;padding:0 8px;';
+  const startOctave=2,endOctave=5,whiteW=36;
+  let wi=0;
+  for(let oct=startOctave;oct<=endOctave;oct++){
+    for(let n=0;n<12;n++){
+      if(IS_BLACK[n]) continue;
+      const midi=(oct+1)*12+n,freq=midiToFreq(midi);
+      const key=document.createElement('div');
+      key.className='white-key';key.dataset.freq=freq;
+      if(n===0){const lbl=document.createElement('span');lbl.className='key-label';lbl.textContent=NOTE_NAMES[n]+oct;key.appendChild(lbl);}
+      addKeyEvents(key,freq);wrapper.appendChild(key);wi++;
+    }
+  }
+  wi=0;
+  for(let oct=startOctave;oct<=endOctave;oct++){
+    const octStart=wi;
+    for(let n=0;n<12;n++){
+      if(!IS_BLACK[n]){wi++;continue;}
+      if(BLACK_OFFSETS[n]===undefined) continue;
+      const midi=(oct+1)*12+n,freq=midiToFreq(midi);
+      const key=document.createElement('div');
+      key.className='black-key';key.dataset.freq=freq;
+      key.style.left=((octStart+BLACK_OFFSETS[n])*whiteW+8-11)+'px';
+      addKeyEvents(key,freq);wrapper.appendChild(key);
+    }
+    wi=octStart+7;
+  }
+  container.appendChild(wrapper);
+  setTimeout(()=>{container.scrollLeft=7*whiteW-8;},50);
+}
+
+function addKeyEvents(key,freq){
+  key.addEventListener('mousedown',e=>{e.preventDefault();noteOn(freq,key);});
+  key.addEventListener('mouseenter',e=>{if(e.buttons===1)noteOn(freq,key);});
+  key.addEventListener('mouseup',()=>noteOff(freq,key));
+  key.addEventListener('mouseleave',()=>noteOff(freq,key));
+  key.addEventListener('touchstart',e=>{e.preventDefault();noteOn(freq,key);},{passive:false});
+  key.addEventListener('touchend',e=>{e.preventDefault();noteOff(freq,key);},{passive:false});
+}
+
+function getCtx(){
+  if(!audioCtx){
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    analyser=audioCtx.createAnalyser();analyser.fftSize=2048;
+    analyser.connect(audioCtx.destination);startWaveformLoop();
+  }
+  return audioCtx;
+}
+
+function noteOn(freq,keyEl){
+  if(activeNotes[freq]) return;
+  const ctx=getCtx(),masterGain=ctx.createGain(),now=ctx.currentTime;
+  const A=adsr.a/1000,D=adsr.d/1000,S=adsr.s;
+  masterGain.gain.setValueAtTime(0,now);
+  masterGain.gain.linearRampToValueAtTime(0.15,now+Math.max(A,0.001));
+  masterGain.gain.linearRampToValueAtTime(0.15*S,now+Math.max(A,0.001)+Math.max(D,0.001));
+  masterGain.connect(analyser);
+  const oscs=[];
+  buildAmps.forEach((amp,i)=>{
+    if(amp<=0) return;
+    const osc=ctx.createOscillator(),g=ctx.createGain();
+    osc.type='sine';osc.frequency.value=freq*(i+1);g.gain.value=amp;
+    osc.connect(g);g.connect(masterGain);osc.start();oscs.push(osc);
+  });
+  activeNotes[freq]={oscs,masterGain};keyEl.classList.add('pressed');
+}
+
+function noteOff(freq,keyEl){
+  const note=activeNotes[freq];if(!note) return;
+  const ctx=getCtx(),now=ctx.currentTime,R=adsr.r/1000;
+  note.masterGain.gain.cancelScheduledValues(now);
+  note.masterGain.gain.setValueAtTime(note.masterGain.gain.value,now);
+  note.masterGain.gain.linearRampToValueAtTime(0,now+Math.max(R,0.005));
+  setTimeout(()=>{
+    note.oscs.forEach(o=>{try{o.stop();o.disconnect();}catch(e){}});
+    note.masterGain.disconnect();
+  },Math.max(adsr.r,5)+150);
+  delete activeNotes[freq];keyEl.classList.remove('pressed');
+}
+
+function startWaveformLoop(){
+  const canvas=document.getElementById('waveCanvas');
+  if(!canvas||!analyser) return;
+  const ctx2=canvas.getContext('2d'),buf=new Float32Array(analyser.fftSize);
+  function draw(){
+    animId=requestAnimationFrame(draw);
+    canvas.width=canvas.offsetWidth*window.devicePixelRatio;
+    canvas.height=canvas.offsetHeight*window.devicePixelRatio;
+    ctx2.scale(window.devicePixelRatio,window.devicePixelRatio);
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;
+    analyser.getFloatTimeDomainData(buf);
+    ctx2.clearRect(0,0,W,H);
+    const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    ctx2.strokeStyle=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+    ctx2.lineWidth=0.5;ctx2.beginPath();ctx2.moveTo(0,H/2);ctx2.lineTo(W,H/2);ctx2.stroke();
+    ctx2.strokeStyle=instrumentData[currentInstrument].color;
+    ctx2.lineWidth=2;ctx2.beginPath();
+    const sw=W/buf.length;
+    for(let i=0;i<buf.length;i++){const y=(1-(buf[i]+1)/2)*H;i===0?ctx2.moveTo(i*sw,y):ctx2.lineTo(i*sw,y);}
+    ctx2.stroke();
+  }
+  draw();
+}
+
+function drawIdleWaveform(){
+  const canvas=document.getElementById('waveCanvas');if(!canvas) return;
+  const ctx2=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio;canvas.height=canvas.offsetHeight*window.devicePixelRatio;
+  ctx2.scale(window.devicePixelRatio,window.devicePixelRatio);
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx2.strokeStyle=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  ctx2.lineWidth=0.5;ctx2.beginPath();ctx2.moveTo(0,H/2);ctx2.lineTo(W,H/2);ctx2.stroke();
+  ctx2.strokeStyle=instrumentData[currentInstrument].color;
+  ctx2.lineWidth=2;ctx2.beginPath();
+  const periods=3,maxAmp=buildAmps.reduce((a,b)=>a+b,0)||1;
+  for(let i=0;i<=W;i++){
+    const t=(i/W)*periods;let y=0;
+    buildAmps.forEach((amp,h)=>{y+=amp*Math.sin(2*Math.PI*(h+1)*t);});
+    const py=H/2-(y/maxAmp)*(H/2-12);
+    i===0?ctx2.moveTo(i,py):ctx2.lineTo(i,py);
+  }
+  ctx2.stroke();
+}
+
+function drawPeriodWave(){
+  const canvas=document.getElementById('periodCanvas');if(!canvas) return;
+  const ctx2=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio;canvas.height=canvas.offsetHeight*window.devicePixelRatio;
+  ctx2.scale(window.devicePixelRatio,window.devicePixelRatio);
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  ctx2.clearRect(0,0,W,H);
+  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx2.strokeStyle=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  ctx2.lineWidth=0.5;ctx2.beginPath();ctx2.moveTo(0,H/2);ctx2.lineTo(W,H/2);ctx2.stroke();
+  ctx2.strokeStyle=instrumentData[currentInstrument].color;
+  ctx2.lineWidth=2;ctx2.beginPath();
+  const pts=800,maxAmp=buildAmps.reduce((a,b)=>a+b,0)||1;
+  for(let i=0;i<=pts;i++){
+    const t=i/pts;let y=0;
+    buildAmps.forEach((amp,h)=>{y+=amp*Math.sin(2*Math.PI*(h+1)*t);});
+    const py=H/2-(y/maxAmp)*(H/2-12);
+    i===0?ctx2.moveTo(t*W,py):ctx2.lineTo(t*W,py);
+  }
+  ctx2.stroke();
+}
+
+function drawADSR(){
+  const canvas=document.getElementById('adsrCanvas');if(!canvas) return;
+  const ctx2=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio;canvas.height=canvas.offsetHeight*window.devicePixelRatio;
+  ctx2.scale(window.devicePixelRatio,window.devicePixelRatio);
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  ctx2.clearRect(0,0,W,H);
+  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const color=instrumentData[currentInstrument].color;
+  const padX=16,padT=16,padB=28,drawW=W-padX*2,drawH=H-padT-padB;
+  const A=adsr.a,D=adsr.d,R=adsr.r,S=adsr.s;
+  const sW=drawW*0.30,scale=(drawW-sW)/Math.max(A+D+R,1);
+  const aW=A*scale,dW=D*scale,rW=R*scale;
+  const yZero=padT+drawH,yPeak=padT,ySust=padT+drawH*(1-S);
+  const x0=padX,x1=x0+aW,x2=x1+dW,x3=x2+sW,x4=x3+rW;
+  ctx2.strokeStyle=isDark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)';
+  ctx2.lineWidth=0.5;
+  [0,0.25,0.5,0.75,1].forEach(v=>{const y=padT+drawH*(1-v);ctx2.beginPath();ctx2.moveTo(padX,y);ctx2.lineTo(W-padX,y);ctx2.stroke();});
+  ctx2.beginPath();ctx2.moveTo(x0,yZero);ctx2.lineTo(x1,yPeak);ctx2.lineTo(x2,ySust);ctx2.lineTo(x3,ySust);ctx2.lineTo(x4,yZero);
+  ctx2.closePath();ctx2.fillStyle=color+'28';ctx2.fill();
+  ctx2.beginPath();ctx2.moveTo(x0,yZero);ctx2.lineTo(x1,yPeak);ctx2.lineTo(x2,ySust);ctx2.lineTo(x3,ySust);ctx2.lineTo(x4,yZero);
+  ctx2.strokeStyle=color;ctx2.lineWidth=2;ctx2.lineJoin='round';ctx2.stroke();
+  ctx2.strokeStyle=isDark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.08)';
+  ctx2.lineWidth=0.5;ctx2.setLineDash([3,3]);
+  [x1,x2,x3].forEach(x=>{ctx2.beginPath();ctx2.moveTo(x,padT);ctx2.lineTo(x,yZero);ctx2.stroke();});
+  ctx2.setLineDash([]);
+  ctx2.fillStyle=isDark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.3)';
+  ctx2.font='500 10px "DM Sans",sans-serif';ctx2.textAlign='center';
+  [['A',x0,x1],['D',x1,x2],['S',x2,x3],['R',x3,x4]].forEach(([lbl,xa,xb])=>{if(xb-xa>12)ctx2.fillText(lbl,(xa+xb)/2,yZero+18);});
+  ctx2.fillStyle=isDark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.3)';
+  ctx2.font='400 9px "Space Mono",monospace';ctx2.textAlign='left';
+  ctx2.fillText(S.toFixed(2),W-padX+2,ySust+3);
+}
+
+function selectInstrument(btn){
+  document.querySelectorAll('.inst-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentInstrument=btn.dataset.inst;
+  document.getElementById('infoText').innerHTML=instrumentData[currentInstrument].desc;
+  buildAmps=[...instrumentData[currentInstrument].harmonics];
+  adsr={...instrumentData[currentInstrument].adsr};
+  renderBuildSliders();renderADSRSliders();
+  drawIdleWaveform();drawPeriodWave();drawADSR();
+}
+
+function renderBuildSliders(){
+  const cont=document.getElementById('buildSliders');if(!cont) return;cont.innerHTML='';
+  buildAmps.forEach((amp,i)=>{
+    const val=Math.round(amp*100);
+    const row=document.createElement('div');row.className='slider-row';
+    row.innerHTML=`<span class="sl-label">${harmNames[i]}</span><input type="range" min="0" max="100" value="${val}" step="1" style="flex:1" oninput="updateBuild(${i},this.value)"><span class="sl-num" id="bv${i}">${val}%</span>`;
+    cont.appendChild(row);
+  });
+}
+
+function updateBuild(i,v){
+  buildAmps[i]=parseInt(v)/100;
+  document.getElementById('bv'+i).textContent=v+'%';
+  drawIdleWaveform();drawPeriodWave();
+  Object.keys(activeNotes).forEach(freq=>{
+    const note=activeNotes[freq];
+    note.oscs.forEach(o=>{try{o.stop();o.disconnect();}catch(e){}});
+    note.masterGain.disconnect();delete activeNotes[freq];
+    const keyEl=document.querySelector(`[data-freq="${freq}"]`);
+    if(keyEl) noteOn(parseFloat(freq),keyEl);
+  });
+}
+
+const adsrDefs=[
+  {key:'a',label:'Attack', min:0,max:1000,step:1,   fmt:v=>Math.round(v)+'ms'},
+  {key:'d',label:'Decay',  min:0,max:1000,step:1,   fmt:v=>Math.round(v)+'ms'},
+  {key:'s',label:'Sustain',min:0,max:1,  step:0.01, fmt:v=>parseFloat(v).toFixed(2)},
+  {key:'r',label:'Release',min:0,max:1000,step:1,   fmt:v=>Math.round(v)+'ms'},
+];
+
+function renderADSRSliders(){
+  const cont=document.getElementById('adsrSliders');if(!cont) return;cont.innerHTML='';
+  adsrDefs.forEach(def=>{
+    const val=adsr[def.key];
+    const row=document.createElement('div');row.className='slider-row';
+    row.innerHTML=`<span class="sl-label">${def.label}</span><input type="range" min="${def.min}" max="${def.max}" value="${val}" step="${def.step}" style="flex:1" oninput="updateADSR('${def.key}',this.value)"><span class="sl-num" id="av-${def.key}">${def.fmt(val)}</span>`;
+    cont.appendChild(row);
+  });
+}
+
+function updateADSR(key,v){
+  const def=adsrDefs.find(d=>d.key===key);
+  adsr[key]=parseFloat(v);
+  document.getElementById('av-'+key).textContent=def.fmt(v);
+  drawADSR();
+}
+
+setTimeout(()=>{
+  buildPiano();renderBuildSliders();renderADSRSliders();
+  drawIdleWaveform();drawPeriodWave();drawADSR();
+},200);
+</script>
