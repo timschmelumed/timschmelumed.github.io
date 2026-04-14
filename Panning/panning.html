@@ -1,0 +1,295 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panning Widget</title>
+
+<style id="mcp-host-variables">:root {
+  --color-background-primary: light-dark(rgba(255, 255, 255, 1), rgba(48, 48, 46, 1));
+  --color-background-secondary: light-dark(rgba(245, 244, 237, 1), rgba(38, 38, 36, 1));
+  --color-background-tertiary: light-dark(rgba(250, 249, 245, 1), rgba(20, 20, 19, 1));
+  --color-background-inverse: light-dark(rgba(20, 20, 19, 1), rgba(250, 249, 245, 1));
+  --color-background-ghost: light-dark(rgba(255, 255, 255, 0), rgba(48, 48, 46, 0));
+  --color-background-info: light-dark(rgba(214, 228, 246, 1), rgba(37, 62, 95, 1));
+  --color-background-danger: light-dark(rgba(247, 236, 236, 1), rgba(96, 42, 40, 1));
+  --color-background-success: light-dark(rgba(233, 241, 220, 1), rgba(27, 70, 20, 1));
+  --color-background-warning: light-dark(rgba(246, 238, 223, 1), rgba(72, 58, 15, 1));
+  --color-background-disabled: light-dark(rgba(255, 255, 255, 0.5), rgba(48, 48, 46, 0.5));
+  --color-text-primary: light-dark(rgba(20, 20, 19, 1), rgba(250, 249, 245, 1));
+  --color-text-secondary: light-dark(rgba(61, 61, 58, 1), rgba(194, 192, 182, 1));
+  --color-text-tertiary: light-dark(rgba(115, 114, 108, 1), rgba(156, 154, 146, 1));
+  --color-text-inverse: light-dark(rgba(255, 255, 255, 1), rgba(20, 20, 19, 1));
+  --color-text-info: light-dark(rgba(50, 102, 173, 1), rgba(128, 170, 221, 1));
+  --color-text-danger: light-dark(rgba(127, 44, 40, 1), rgba(238, 136, 132, 1));
+  --color-text-success: light-dark(rgba(38, 91, 25, 1), rgba(122, 185, 72, 1));
+  --color-text-warning: light-dark(rgba(90, 72, 21, 1), rgba(209, 160, 65, 1));
+  --color-text-disabled: light-dark(rgba(20, 20, 19, 0.5), rgba(250, 249, 245, 0.5));
+  --color-text-ghost: light-dark(rgba(115, 114, 108, 0.5), rgba(156, 154, 146, 0.5));
+  --color-border-primary: light-dark(rgba(31, 30, 29, 0.4), rgba(222, 220, 209, 0.4));
+  --color-border-secondary: light-dark(rgba(31, 30, 29, 0.3), rgba(222, 220, 209, 0.3));
+  --color-border-tertiary: light-dark(rgba(31, 30, 29, 0.15), rgba(222, 220, 209, 0.15));
+  --color-border-inverse: light-dark(rgba(255, 255, 255, 0.3), rgba(20, 20, 19, 0.15));
+  --color-border-ghost: light-dark(rgba(31, 30, 29, 0), rgba(222, 220, 209, 0));
+  --color-border-info: light-dark(rgba(70, 130, 213, 1), rgba(70, 130, 213, 1));
+  --color-border-danger: light-dark(rgba(167, 61, 57, 1), rgba(205, 92, 88, 1));
+  --color-border-success: light-dark(rgba(67, 116, 38, 1), rgba(89, 145, 48, 1));
+  --color-border-warning: light-dark(rgba(128, 92, 31, 1), rgba(168, 120, 41, 1));
+  --color-border-disabled: light-dark(rgba(31, 30, 29, 0.1), rgba(222, 220, 209, 0.1));
+  --color-ring-primary: light-dark(rgba(20, 20, 19, 0.7), rgba(250, 249, 245, 0.7));
+  --color-ring-secondary: light-dark(rgba(61, 61, 58, 0.7), rgba(194, 192, 182, 0.7));
+  --color-ring-inverse: light-dark(rgba(255, 255, 255, 0.7), rgba(20, 20, 19, 0.7));
+  --color-ring-info: light-dark(rgba(50, 102, 173, 0.5), rgba(128, 170, 221, 0.5));
+  --color-ring-danger: light-dark(rgba(167, 61, 57, 0.5), rgba(205, 92, 88, 0.5));
+  --color-ring-success: light-dark(rgba(67, 116, 38, 0.5), rgba(89, 145, 48, 0.5));
+  --color-ring-warning: light-dark(rgba(128, 92, 31, 0.5), rgba(168, 120, 41, 0.5));
+  --font-sans: Anthropic Sans, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-text-xs-size: 12px;
+  --font-text-sm-size: 14px;
+  --font-text-md-size: 16px;
+  --font-text-lg-size: 20px;
+  --font-heading-xs-size: 12px;
+  --font-heading-sm-size: 14px;
+  --font-heading-md-size: 16px;
+  --font-heading-lg-size: 20px;
+  --font-heading-xl-size: 24px;
+  --font-heading-2xl-size: 28px;
+  --font-heading-3xl-size: 36px;
+  --font-text-xs-line-height: 1.4;
+  --font-text-sm-line-height: 1.4;
+  --font-text-md-line-height: 1.4;
+  --font-text-lg-line-height: 1.25;
+  --font-heading-xs-line-height: 1.4;
+  --font-heading-sm-line-height: 1.4;
+  --font-heading-md-line-height: 1.4;
+  --font-heading-lg-line-height: 1.25;
+  --font-heading-xl-line-height: 1.25;
+  --font-heading-2xl-line-height: 1.1;
+  --font-heading-3xl-line-height: 1;
+  --border-radius-xs: 4px;
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --border-radius-xl: 12px;
+  --border-radius-full: 9999px;
+  --border-width-regular: 0.5px;
+  --shadow-hairline: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}</style>
+
+<style>
+  .panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .row:last-child { margin-bottom: 0; }
+  label { font-size: 13px; color: var(--color-text-secondary); min-width: 110px; }
+  .val { font-size: 13px; font-weight: 500; min-width: 64px; text-align: right; color: var(--color-text-primary); }
+  .toggle-group { display: flex; gap: 8px; }
+  .toggle { font-size: 13px; padding: 5px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+  .toggle.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .play-btn { width: 100%; padding: 10px; font-size: 15px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+  .play-btn:hover { background: var(--color-background-tertiary); }
+  .play-btn:active { transform: scale(0.98); }
+  .section-title { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px; }
+  .disabled-section { opacity: 0.35; pointer-events: none; }
+  .status { font-size: 12px; color: var(--color-text-tertiary); text-align: center; margin-top: 0.5rem; min-height: 18px; }
+  .ends { display:flex; justify-content:space-between; font-size:11px; color: var(--color-text-tertiary); padding: 0 0 6px; }
+  input[type="range"] { width: 100%; }
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">Binaural panning tool — adjust frequency, amplitude, duration, ILD and ITD to spatialise a pure tone</h2>
+
+<div style="padding: 1rem 0;">
+
+  <div class="panel">
+    <div class="section-title">Tone parameters</div>
+    <div class="row">
+      <label>Frequency (Hz)</label>
+      <input type="range" id="freq" min="0" max="1000" step="1" value="500">
+      <span class="val" id="freqVal">1000 Hz</span>
+    </div>
+    <div class="row">
+      <label>Amplitude</label>
+      <input type="range" id="amp" min="0" max="1" step="0.01" value="0.5">
+      <span class="val" id="ampVal">0.50</span>
+    </div>
+    <div class="row">
+      <label>Duration (ms)</label>
+      <input type="range" id="dur" min="1" max="100" step="1" value="50">
+      <span class="val" id="durVal">50 ms</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title">Spatialization</div>
+    <div class="toggle-group" style="margin-bottom: 1.25rem;">
+      <button class="toggle active" id="btn-ild" onclick="toggleMethod('ild')">ILD</button>
+      <button class="toggle active" id="btn-itd" onclick="toggleMethod('itd')">ITD</button>
+    </div>
+
+    <div id="ild-section">
+      <div class="row">
+        <label>ILD (dB)</label>
+        <input type="range" id="ild" min="-30" max="30" step="0.5" value="0">
+        <span class="val" id="ildVal">0.0 dB</span>
+      </div>
+      <div class="ends">
+        <span>← Left (−30 dB)</span><span>Right (+30 dB) →</span>
+      </div>
+    </div>
+
+    <div id="itd-section" style="margin-top: 0.5rem;">
+      <div class="row">
+        <label>ITD (ms)</label>
+        <input type="range" id="itd" min="-0.7" max="0.7" step="0.01" value="0">
+        <span class="val" id="itdVal">0.00 ms</span>
+      </div>
+      <div class="ends">
+        <span>← Left (−0.7 ms)</span><span>Right (+0.7 ms) →</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="text-align:center;">
+    <div class="section-title">Head view — perceived position</div>
+    <svg id="headsvg" viewBox="0 0 200 120" width="200" height="120" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="60" rx="38" ry="48" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+      <ellipse cx="63" cy="62" rx="8" ry="14" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+      <ellipse cx="137" cy="62" rx="8" ry="14" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+      <text x="54" y="66" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">L</text>
+      <text x="146" y="66" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">R</text>
+      <circle id="soundDot" cx="100" cy="12" r="7" fill="#378ADD" opacity="0.9"/>
+    </svg>
+    <div style="font-size:12px; color:var(--color-text-tertiary); margin-top:-4px;" id="posLabel">Center</div>
+  </div>
+
+  <button class="play-btn" id="playBtn" onclick="playTone()">Play tone</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  let useILD = true, useITD = true;
+  let audioCtx = null;
+
+  const LOG_MIN = Math.log10(20);
+  const LOG_MAX = Math.log10(20000);
+
+  function sliderToFreq(v) {
+    return Math.round(Math.pow(10, LOG_MIN + (v / 1000) * (LOG_MAX - LOG_MIN)));
+  }
+
+  function freqToSlider(f) {
+    return ((Math.log10(f) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 1000;
+  }
+
+  document.getElementById('freq').value = freqToSlider(1000).toFixed(0);
+
+  function formatFreq(v) {
+    const f = sliderToFreq(v);
+    return f >= 1000 ? (f / 1000).toFixed(f % 1000 === 0 ? 0 : 1) + ' kHz' : f + ' Hz';
+  }
+
+  function toggleMethod(m) {
+    if (m === 'ild') useILD = !useILD;
+    else if (m === 'itd') useITD = !useITD;
+    document.getElementById('btn-ild').classList.toggle('active', useILD);
+    document.getElementById('btn-itd').classList.toggle('active', useITD);
+    document.getElementById('ild-section').classList.toggle('disabled-section', !useILD);
+    document.getElementById('itd-section').classList.toggle('disabled-section', !useITD);
+    updateDot();
+  }
+
+  function bind(id, outId, fmt) {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      document.getElementById(outId).textContent = fmt(el.value);
+      updateDot();
+    });
+  }
+
+  bind('freq', 'freqVal', formatFreq);
+  bind('amp', 'ampVal', v => parseFloat(v).toFixed(2));
+  bind('dur', 'durVal', v => parseInt(v) + ' ms');
+  bind('ild', 'ildVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(1) + ' dB');
+  bind('itd', 'itdVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(2) + ' ms');
+
+  document.getElementById('freqVal').textContent = formatFreq(document.getElementById('freq').value);
+
+  function updateDot() {
+    const ild = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+    const itd = useITD ? parseFloat(document.getElementById('itd').value) : 0;
+    const combined = (ild / 30) * 0.6 + (itd / 0.7) * 0.4;
+    const clamped = Math.max(-1, Math.min(1, combined));
+    const angle = clamped * Math.PI * 0.55;
+    const r = 56;
+    const cx = 100 + Math.sin(angle) * r;
+    const cy = 12 + (1 - Math.cos(angle)) * 50;
+    document.getElementById('soundDot').setAttribute('cx', cx.toFixed(1));
+    document.getElementById('soundDot').setAttribute('cy', cy.toFixed(1));
+    document.getElementById('posLabel').textContent =
+      clamped < -0.03 ? `Left ${Math.round(-clamped * 100)}%` :
+      clamped > 0.03  ? `Right ${Math.round(clamped * 100)}%` : 'Center';
+  }
+
+  async function playTone() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+    const freq = sliderToFreq(document.getElementById('freq').value);
+    const amp = parseFloat(document.getElementById('amp').value);
+    const durMs = parseInt(document.getElementById('dur').value);
+    const ildDb = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+    const itdMs = useITD ? parseFloat(document.getElementById('itd').value) : 0;
+    const durS = durMs / 1000;
+    const itdS = itdMs / 1000;
+
+    const leftGain  = ildDb <= 0 ? 1 : Math.pow(10, -ildDb / 20);
+    const rightGain = ildDb >= 0 ? 1 : Math.pow(10,  ildDb / 20);
+
+    const merger = audioCtx.createChannelMerger(2);
+    merger.connect(audioCtx.destination);
+
+    function makeChannel(gainVal, delayVal, chanIdx) {
+      const osc = audioCtx.createOscillator();
+      const gn = audioCtx.createGain();
+      const dl = audioCtx.createDelay(1.0);
+      const env = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gn.gain.value = gainVal * amp;
+      dl.delayTime.value = Math.max(0, delayVal);
+
+      const now = audioCtx.currentTime + Math.max(0, -delayVal);
+      env.gain.setValueAtTime(0, now);
+      env.gain.linearRampToValueAtTime(1, now + Math.min(0.003, durS * 0.1));
+      env.gain.setValueAtTime(1, now + durS - Math.min(0.003, durS * 0.1));
+      env.gain.linearRampToValueAtTime(0, now + durS);
+
+      osc.connect(gn); gn.connect(dl); dl.connect(env);
+      env.connect(merger, 0, chanIdx);
+
+      osc.start(now);
+      osc.stop(now + durS + 0.01);
+    }
+
+    makeChannel(leftGain,  itdS < 0 ? -itdS : 0, 0);
+    makeChannel(rightGain, itdS > 0 ?  itdS : 0, 1);
+
+    const btn = document.getElementById('playBtn');
+    const ildStr = useILD ? `ILD ${ildDb >= 0 ? '+' : ''}${ildDb.toFixed(1)} dB` : 'ILD off';
+    const itdStr = useITD ? `ITD ${itdMs >= 0 ? '+' : ''}${itdMs.toFixed(2)} ms` : 'ITD off';
+    document.getElementById('status').textContent = `${formatFreq(document.getElementById('freq').value)} · ${durMs} ms · ${ildStr} · ${itdStr}`;
+    btn.textContent = 'Playing…';
+    btn.style.opacity = '0.6';
+    setTimeout(() => { btn.textContent = 'Play tone'; btn.style.opacity = '1'; }, durMs + 30);
+  }
+
+  updateDot();
+</script>
+
+</body></html>
