@@ -84,26 +84,32 @@
 
 <style>
   .panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
-  .row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .row { display: flex; align-items: center; gap: 12px; margin-bottom: 0.85rem; }
   .row:last-child { margin-bottom: 0; }
   label { font-size: 13px; color: var(--color-text-secondary); min-width: 110px; }
   .val { font-size: 13px; font-weight: 500; min-width: 64px; text-align: right; color: var(--color-text-primary); }
   .toggle-group { display: flex; gap: 8px; }
   .toggle { font-size: 13px; padding: 5px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
   .toggle.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
-  .play-btn { width: 100%; padding: 10px; font-size: 15px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+  .play-btn { width: 50%; padding: 10px; font-size: 15px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
   .play-btn:hover { background: var(--color-background-tertiary); }
   .play-btn:active { transform: scale(0.98); }
-  .section-title { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px; }
+  .repeat-btn { width: 100%; padding: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; margin-top: 8px; }
+  .repeat-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+  .repeat-btn:hover { background: var(--color-background-tertiary); }
+  .section-title { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px; }
   .disabled-section { opacity: 0.35; pointer-events: none; }
   .status { font-size: 12px; color: var(--color-text-tertiary); text-align: center; margin-top: 0.5rem; min-height: 18px; }
-  .ends { display:flex; justify-content:space-between; font-size:11px; color: var(--color-text-tertiary); padding: 0 0 6px; }
+  .ends { display:flex; justify-content:space-between; font-size:11px; color: var(--color-text-tertiary); padding: 0 0 4px; }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 10px 0; }
   input[type="range"] { width: 100%; }
+  #button-panel { display: flex; column-gap: 2rem; }
+  #repeat-panel { width: 100%; }
 </style>
 
-<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">Binaural panning tool — adjust frequency, amplitude, duration, ILD and ITD to spatialise a pure tone</h2>
+</head><body>
 
-<div style="padding: 1rem 0;">
+<div style="padding: 1rem 0; max-width: 70rem; margin: 0 auto;">
 
   <div class="panel">
     <div class="section-title">Tone parameters</div>
@@ -122,58 +128,80 @@
       <input type="range" id="dur" min="1" max="100" step="1" value="50">
       <span class="val" id="durVal">50 ms</span>
     </div>
+    <div class="row">
+      <label>Ramp (ms)</label>
+      <input type="range" id="ramp" min="0" max="50" step="0.5" value="5">
+      <span class="val" id="rampVal">5.0 ms</span>
+    </div>
   </div>
 
   <div class="panel">
     <div class="section-title">Spatialization</div>
-    <div class="toggle-group" style="margin-bottom: 1.25rem;">
+    <div class="toggle-group" style="margin-bottom: 1.1rem;">
       <button class="toggle active" id="btn-ild" onclick="toggleMethod('ild')">ILD</button>
       <button class="toggle active" id="btn-itd" onclick="toggleMethod('itd')">ITD</button>
     </div>
-
     <div id="ild-section">
       <div class="row">
         <label>ILD (dB)</label>
         <input type="range" id="ild" min="-30" max="30" step="0.5" value="0">
         <span class="val" id="ildVal">0.0 dB</span>
       </div>
-      <div class="ends">
-        <span>← Left (−30 dB)</span><span>Right (+30 dB) →</span>
-      </div>
+      <div class="ends"><span>← Left (−30 dB)</span><span>Right (+30 dB) →</span></div>
     </div>
-
-    <div id="itd-section" style="margin-top: 0.5rem;">
+    <div id="itd-section" style="margin-top: 0.4rem;">
       <div class="row">
         <label>ITD (ms)</label>
         <input type="range" id="itd" min="-0.7" max="0.7" step="0.01" value="0">
         <span class="val" id="itdVal">0.00 ms</span>
       </div>
-      <div class="ends">
-        <span>← Left (−0.7 ms)</span><span>Right (+0.7 ms) →</span>
-      </div>
+      <div class="ends"><span>← Left (−0.7 ms)</span><span>Right (+0.7 ms) →</span></div>
     </div>
   </div>
 
-  <div class="panel" style="text-align:center;">
-    <div class="section-title">Head view — perceived position</div>
-    <svg id="headsvg" viewBox="0 0 200 120" width="200" height="120" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="100" cy="60" rx="38" ry="48" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
-      <ellipse cx="63" cy="62" rx="8" ry="14" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
-      <ellipse cx="137" cy="62" rx="8" ry="14" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
-      <text x="54" y="66" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">L</text>
-      <text x="146" y="66" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">R</text>
-      <circle id="soundDot" cx="100" cy="12" r="7" fill="#378ADD" opacity="0.9"/>
-    </svg>
-    <div style="font-size:12px; color:var(--color-text-tertiary); margin-top:-4px;" id="posLabel">Center</div>
+  <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; width: 100%;">
+    <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0;">
+      <div class="section-title" style="margin-bottom:6px;">Perceived position</div>
+      <svg id="headsvg" viewBox="0 0 130 130" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="65" cy="68" rx="36" ry="46" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <ellipse cx="30" cy="70" rx="7" ry="13" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <ellipse cx="100" cy="70" rx="7" ry="13" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <text x="30" y="74" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">L</text>
+        <text x="100" y="74" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">R</text>
+        <circle id="soundDot" cx="65" cy="18" r="7" fill="#378ADD" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <div style="flex:1; min-width:0;">
+      <div class="section-title" style="margin-bottom:4px;">Waveform</div>
+      <canvas id="waveCanvas" style="width:100%; display:block;"></canvas>
+    </div>
   </div>
 
-  <button class="play-btn" id="playBtn" onclick="playTone()">Play tone</button>
+  <div id="button-panel">
+    <button class="play-btn" id="playBtn" onclick="handlePlay()">Play tone</button>
+
+    <!-- <hr class="divider"> -->
+
+    <div id="repeat-panel">
+      <div class="row" style="margin-bottom: 0.5rem;">
+        <label>Interval (ms)</label>
+        <input type="range" id="interval" min="100" max="1000" step="10" value="400">
+        <span class="val" id="intervalVal">400 ms</span>
+      </div>
+
+      <button class="repeat-btn" id="repeatBtn" onclick="toggleRepeat()">Repeat</button>
+    </div>
+  </div>
+
   <div class="status" id="status"></div>
 </div>
 
 <script>
   let useILD = true, useITD = true;
   let audioCtx = null;
+  let repeatInterval = null;
+  let isRepeating = false;
 
   const LOG_MIN = Math.log10(20);
   const LOG_MAX = Math.log10(20000);
@@ -181,11 +209,9 @@
   function sliderToFreq(v) {
     return Math.round(Math.pow(10, LOG_MIN + (v / 1000) * (LOG_MAX - LOG_MIN)));
   }
-
   function freqToSlider(f) {
     return ((Math.log10(f) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 1000;
   }
-
   document.getElementById('freq').value = freqToSlider(1000).toFixed(0);
 
   function formatFreq(v) {
@@ -201,95 +227,289 @@
     document.getElementById('ild-section').classList.toggle('disabled-section', !useILD);
     document.getElementById('itd-section').classList.toggle('disabled-section', !useITD);
     updateDot();
+    drawWaveform();
   }
 
-  function bind(id, outId, fmt) {
+  function bind(id, outId, fmt, cb) {
     const el = document.getElementById(id);
     el.addEventListener('input', () => {
       document.getElementById(outId).textContent = fmt(el.value);
-      updateDot();
+      if (cb) cb();
     });
   }
 
-  bind('freq', 'freqVal', formatFreq);
-  bind('amp', 'ampVal', v => parseFloat(v).toFixed(2));
-  bind('dur', 'durVal', v => parseInt(v) + ' ms');
-  bind('ild', 'ildVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(1) + ' dB');
-  bind('itd', 'itdVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(2) + ' ms');
+  bind('freq',     'freqVal',     formatFreq, drawWaveform);
+  bind('amp',      'ampVal',      v => parseFloat(v).toFixed(2), drawWaveform);
+  bind('dur',      'durVal',      v => parseInt(v) + ' ms', drawWaveform);
+  bind('ramp',     'rampVal',     v => parseFloat(v).toFixed(1) + ' ms', drawWaveform);
+  bind('interval', 'intervalVal', v => parseInt(v) + ' ms', () => {
+    if (isRepeating) { stopRepeat(); startRepeat(); }
+  });
+  bind('ild', 'ildVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(1) + ' dB', () => { updateDot(); drawWaveform(); });
+  bind('itd', 'itdVal', v => (parseFloat(v) >= 0 ? '+' : '') + parseFloat(v).toFixed(2) + ' ms', () => { updateDot(); drawWaveform(); });
 
   document.getElementById('freqVal').textContent = formatFreq(document.getElementById('freq').value);
 
   function updateDot() {
-    const ild = useILD ? parseFloat(document.getElementById('ild').value) : 0;
-    const itd = useITD ? parseFloat(document.getElementById('itd').value) : 0;
-    const combined = (ild / 30) * 0.6 + (itd / 0.7) * 0.4;
-    const clamped = Math.max(-1, Math.min(1, combined));
-    const angle = clamped * Math.PI * 0.55;
-    const r = 56;
-    const cx = 100 + Math.sin(angle) * r;
-    const cy = 12 + (1 - Math.cos(angle)) * 50;
+    const ildRaw = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+    const itdRaw = useITD ? parseFloat(document.getElementById('itd').value) : 0;
+
+    // ILD maps its full range to [-1, +1]
+    const ildNorm = Math.max(-1, Math.min(1, ildRaw / 30));
+
+    // ITD can only cover half the remaining distance toward center from ILD's position.
+    // Available room toward center: (1 - |ildNorm|), ITD gets half of that.
+    const itdMaxContrib = (1 - Math.abs(ildNorm)) * 0.5;
+    const itdNorm = useITD ? (itdRaw / 0.7) * itdMaxContrib : 0;
+
+    const combined = Math.max(-1, Math.min(1, ildNorm + itdNorm));
+
+    const angle = combined * Math.PI * 0.55;
+    const r = 54;
+    const cx = 65 + Math.sin(angle) * r;
+    const cy = 18 + (1 - Math.cos(angle)) * 52;
     document.getElementById('soundDot').setAttribute('cx', cx.toFixed(1));
     document.getElementById('soundDot').setAttribute('cy', cy.toFixed(1));
-    document.getElementById('posLabel').textContent =
-      clamped < -0.03 ? `Left ${Math.round(-clamped * 100)}%` :
-      clamped > 0.03  ? `Right ${Math.round(clamped * 100)}%` : 'Center';
   }
 
-  async function playTone() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
+  function getEnvelope(t, durS, rampS, amp) {
+    if (t < 0 || t > durS) return 0;
+    if (rampS === 0) return amp;
+    const fadeIn  = Math.min(t / rampS, 1);
+    const fadeOut = Math.min((durS - t) / rampS, 1);
+    return amp * Math.min(fadeIn, fadeOut);
+  }
 
-    const freq = sliderToFreq(document.getElementById('freq').value);
-    const amp = parseFloat(document.getElementById('amp').value);
-    const durMs = parseInt(document.getElementById('dur').value);
-    const ildDb = useILD ? parseFloat(document.getElementById('ild').value) : 0;
-    const itdMs = useITD ? parseFloat(document.getElementById('itd').value) : 0;
-    const durS = durMs / 1000;
-    const itdS = itdMs / 1000;
+  function drawWaveform() {
+    const canvas = document.getElementById('waveCanvas');
+    const parent = canvas.parentElement;
+    const W = parent.clientWidth || 300;
+    const H = 180;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-    const leftGain  = ildDb <= 0 ? 1 : Math.pow(10, -ildDb / 20);
-    const rightGain = ildDb >= 0 ? 1 : Math.pow(10,  ildDb / 20);
+    const cs = getComputedStyle(document.documentElement);
+    const textColor   = cs.getPropertyValue('--color-text-tertiary').trim()  || '#888';
+    const borderColor = cs.getPropertyValue('--color-border-tertiary').trim() || '#ddd';
 
-    const merger = audioCtx.createChannelMerger(2);
-    merger.connect(audioCtx.destination);
+    const PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 32;
+    const cW = W - PAD_L - PAD_R;
+    const cH = H - PAD_T - PAD_B;
 
-    function makeChannel(gainVal, delayVal, chanIdx) {
-      const osc = audioCtx.createOscillator();
-      const gn = audioCtx.createGain();
-      const dl = audioCtx.createDelay(1.0);
-      const env = audioCtx.createGain();
+    ctx.clearRect(0, 0, W, H);
 
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gn.gain.value = gainVal * amp;
-      dl.delayTime.value = Math.max(0, delayVal);
+    const durMs  = parseInt(document.getElementById('dur').value);
+    const rampMs = parseFloat(document.getElementById('ramp').value);
+    const amp    = parseFloat(document.getElementById('amp').value);
+    const freq   = sliderToFreq(document.getElementById('freq').value);
+    const ildDb  = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+    const itdMs  = useITD ? parseFloat(document.getElementById('itd').value) : 0;
 
-      const now = audioCtx.currentTime + Math.max(0, -delayVal);
-      env.gain.setValueAtTime(0, now);
-      env.gain.linearRampToValueAtTime(1, now + Math.min(0.003, durS * 0.1));
-      env.gain.setValueAtTime(1, now + durS - Math.min(0.003, durS * 0.1));
-      env.gain.linearRampToValueAtTime(0, now + durS);
+    const leftAmp  = amp * (ildDb <= 0 ? 1 : Math.pow(10, -ildDb / 20));
+    const rightAmp = amp * (ildDb >= 0 ? 1 : Math.pow(10,  ildDb / 20));
 
-      osc.connect(gn); gn.connect(dl); dl.connect(env);
-      env.connect(merger, 0, chanIdx);
+    // ITD: positive = right, meaning left channel is delayed
+    //      negative = left, meaning right channel is delayed
+    const itdS     = itdMs / 1000;
+    const leftOff  = itdS > 0 ?  itdS : 0;
+    const rightOff = itdS < 0 ? -itdS : 0;
 
-      osc.start(now);
-      osc.stop(now + durS + 0.01);
+    const totalMs = durMs + Math.max(leftOff, rightOff) * 1000 + rampMs;
+    const dispMs  = Math.max(totalMs * 1.05, durMs + 2);
+    const durS    = durMs / 1000;
+    const rampS   = rampMs / 1000;
+
+    // Axes
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(PAD_L, PAD_T);
+    ctx.lineTo(PAD_L, PAD_T + cH);
+    ctx.lineTo(PAD_L + cW, PAD_T + cH);
+    ctx.stroke();
+
+    const midY = PAD_T + cH / 2;
+
+    ctx.fillStyle = textColor;
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('+1', PAD_L - 4, PAD_T + 4);
+    ctx.fillText('0',  PAD_L - 4, midY + 4);
+    ctx.fillText('−1', PAD_L - 4, PAD_T + cH + 4);
+
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([3, 4]);
+    ctx.beginPath();
+    ctx.moveTo(PAD_L, midY);
+    ctx.lineTo(PAD_L + cW, midY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const numTicks = 6;
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= numTicks; i++) {
+      const x = PAD_L + (i / numTicks) * cW;
+      const t = (i / numTicks) * dispMs;
+      ctx.fillText(t.toFixed(0) + ' ms', x, PAD_T + cH + 16);
+      if (i > 0 && i < numTicks) {
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 0.5;
+        ctx.setLineDash([2, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, PAD_T);
+        ctx.lineTo(x, PAD_T + cH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
 
-    makeChannel(leftGain,  itdS < 0 ? -itdS : 0, 0);
-    makeChannel(rightGain, itdS > 0 ?  itdS : 0, 1);
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.save();
+    ctx.translate(10, PAD_T + cH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('amplitude', 0, 0);
+    ctx.restore();
+    ctx.fillText('time', PAD_L + cW / 2, PAD_T + cH + 28);
 
-    const btn = document.getElementById('playBtn');
+    const N = Math.min(cW * 3, 4000);
+
+    function drawChannel(chanAmp, chanOffS, color, alpha) {
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      let started = false;
+      for (let i = 0; i <= N; i++) {
+        const tMs  = (i / N) * dispMs;
+        const tS   = tMs / 1000 - chanOffS;
+        const env  = getEnvelope(tS, durS, rampS, chanAmp);
+        const sine = Math.sin(2 * Math.PI * freq * tS);
+        const y_val = env * sine;
+        const x = PAD_L + (i / N) * cW;
+        const y = midY - y_val * (cH / 2);
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    drawChannel(leftAmp,  leftOff,  '#378ADD', 0.85);
+    drawChannel(rightAmp, rightOff, '#D85A30', 0.75);
+
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#378ADD';
+    ctx.globalAlpha = 0.9;
+    ctx.fillText('Left', PAD_L + 4, PAD_T + 12);
+    ctx.fillStyle = '#D85A30';
+    ctx.fillText('Right', PAD_L + 4, PAD_T + 24);
+    ctx.globalAlpha = 1;
+  }
+
+  function triggerTone() {
+    (async () => {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+      const freq   = sliderToFreq(document.getElementById('freq').value);
+      const amp    = parseFloat(document.getElementById('amp').value);
+      const durMs  = parseInt(document.getElementById('dur').value);
+      const rampMs = parseFloat(document.getElementById('ramp').value);
+      const ildDb  = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+      const itdMs  = useITD ? parseFloat(document.getElementById('itd').value) : 0;
+      const durS   = durMs / 1000;
+      const rampS  = Math.min(rampMs / 1000, durS / 2);
+      const itdS   = itdMs / 1000;
+
+      const leftGain  = ildDb <= 0 ? 1 : Math.pow(10, -ildDb / 20);
+      const rightGain = ildDb >= 0 ? 1 : Math.pow(10,  ildDb / 20);
+
+      // Positive ITD = sound from right = left ear is delayed
+      // Negative ITD = sound from left = right ear is delayed
+      const leftDelay  = itdS > 0 ?  itdS : 0;
+      const rightDelay = itdS < 0 ? -itdS : 0;
+
+      const merger = audioCtx.createChannelMerger(2);
+      merger.connect(audioCtx.destination);
+
+      function makeChannel(gainVal, delayVal, chanIdx) {
+        const osc = audioCtx.createOscillator();
+        const gn  = audioCtx.createGain();
+        const dl  = audioCtx.createDelay(1.0);
+        const env = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gn.gain.value = gainVal * amp;
+        dl.delayTime.value = delayVal;
+        const now = audioCtx.currentTime;
+        env.gain.setValueAtTime(0, now);
+        env.gain.linearRampToValueAtTime(1, now + rampS);
+        env.gain.setValueAtTime(1, now + durS - rampS);
+        env.gain.linearRampToValueAtTime(0, now + durS);
+        osc.connect(gn); gn.connect(dl); dl.connect(env);
+        env.connect(merger, 0, chanIdx);
+        osc.start(now);
+        osc.stop(now + durS + delayVal + 0.02);
+      }
+
+      makeChannel(leftGain,  leftDelay,  0);
+      makeChannel(rightGain, rightDelay, 1);
+    })();
+  }
+
+  function handlePlay() {
+    triggerTone();
+    const durMs  = parseInt(document.getElementById('dur').value);
+    const ildDb  = useILD ? parseFloat(document.getElementById('ild').value) : 0;
+    const itdMs  = useITD ? parseFloat(document.getElementById('itd').value) : 0;
+    const rampMs = parseFloat(document.getElementById('ramp').value);
     const ildStr = useILD ? `ILD ${ildDb >= 0 ? '+' : ''}${ildDb.toFixed(1)} dB` : 'ILD off';
     const itdStr = useITD ? `ITD ${itdMs >= 0 ? '+' : ''}${itdMs.toFixed(2)} ms` : 'ITD off';
-    document.getElementById('status').textContent = `${formatFreq(document.getElementById('freq').value)} · ${durMs} ms · ${ildStr} · ${itdStr}`;
+    document.getElementById('status').textContent =
+      `${formatFreq(document.getElementById('freq').value)} · ${durMs} ms · ramp ${rampMs.toFixed(1)} ms · ${ildStr} · ${itdStr}`;
+    const btn = document.getElementById('playBtn');
     btn.textContent = 'Playing…';
     btn.style.opacity = '0.6';
     setTimeout(() => { btn.textContent = 'Play tone'; btn.style.opacity = '1'; }, durMs + 30);
   }
 
+  function startRepeat() {
+    const intervalMs = parseInt(document.getElementById('interval').value);
+    triggerTone();
+    repeatInterval = setInterval(triggerTone, intervalMs);
+  }
+
+  function stopRepeat() {
+    clearInterval(repeatInterval);
+    repeatInterval = null;
+  }
+
+  function toggleRepeat() {
+    isRepeating = !isRepeating;
+    const btn = document.getElementById('repeatBtn');
+    if (isRepeating) {
+      btn.classList.add('active');
+      btn.textContent = 'Stop repeating';
+      document.getElementById('status').textContent = `Repeating every ${document.getElementById('interval').value} ms`;
+      startRepeat();
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = 'Repeat';
+      document.getElementById('status').textContent = '';
+      stopRepeat();
+    }
+  }
+
   updateDot();
+  setTimeout(() => { drawWaveform(); window.addEventListener('resize', drawWaveform); }, 100);
 </script>
 
 </body></html>
