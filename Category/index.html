@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Categorical Perception Experiment</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f4ef;
+    --bg-tertiary: #eeede8;
+    --text-primary: #1a1916;
+    --text-secondary: #6b6a65;
+    --text-tertiary: #9b9a96;
+    --border-light: rgba(26,25,22,0.12);
+    --border-medium: rgba(26,25,22,0.22);
+    --accent-blue: #3266ad;
+    --accent-blue-bg: #e6f1fb;
+    --accent-blue-text: #0c447c;
+    --accent-coral: #d85a30;
+    --accent-coral-bg: #faece7;
+    --accent-coral-text: #712b13;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: 'Georgia', serif;
+    --font-ui: system-ui, -apple-system, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1a1916;
+      --bg-secondary: #242320;
+      --bg-tertiary: #2e2d29;
+      --text-primary: #f0ede8;
+      --text-secondary: #a09e99;
+      --text-tertiary: #6b6a65;
+      --border-light: rgba(240,237,232,0.10);
+      --border-medium: rgba(240,237,232,0.20);
+      --accent-blue-bg: #0c1f35;
+      --accent-blue-text: #85b7eb;
+      --accent-coral-bg: #2d1409;
+      --accent-coral-text: #f0997b;
+    }
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    border-bottom: 0.5px solid var(--border-light);
+    margin-bottom: 2rem;
+  }
+
+  .site-logo {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+  }
+
+  .import-zone {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .import-zone-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .import-zone-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+  }
+
+  .import-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .file-input-label:hover { background: var(--bg-tertiary); }
+  .file-input-label input { display: none; }
+
+  .import-status {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .view-group-btn {
+    padding: 7px 14px;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  .view-group-btn:hover { opacity: 0.85; }
+  .view-group-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .badge-blue { background: var(--accent-blue-bg); color: var(--accent-blue-text); }
+  .badge-coral { background: var(--accent-coral-bg); color: var(--accent-coral-text); }
+
+  .phase-title {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .phase-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .info-box {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+
+  .trial-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .continuum-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-tertiary);
+    margin-bottom: 0.6rem;
+  }
+
+  .trial-question {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    transition: background 0.15s;
+    font-family: var(--font-ui);
+  }
+
+  .play-btn:hover { background: var(--bg-tertiary); }
+  .play-btn.playing { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+  .play-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .play-btn.playing .play-icon { background: var(--accent-blue); }
+
+  .play-icon svg { fill: var(--bg-primary); }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .choice-btn {
+    padding: 12px;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.12s;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+  }
+
+  .choice-btn:hover { background: var(--bg-secondary); }
+  .choice-btn.selected { background: var(--accent-blue-bg); border-color: var(--accent-blue); color: var(--accent-blue-text); }
+  .choice-btn.locked { pointer-events: none; opacity: 0.4; }
+
+  .axb-stims {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .stim-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.12s;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+  }
+
+  .stim-btn:hover { background: var(--bg-tertiary); }
+  .stim-btn.playing { border-color: var(--accent-blue); color: var(--accent-blue-text); }
+
+  .stim-letter {
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .stim-sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+  }
+
+  .stim-sep {
+    color: var(--text-tertiary);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .stim-x .stim-letter { color: var(--accent-coral-text); }
+  .stim-x { border-style: dashed; }
+
+  .next-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: var(--font-ui);
+    margin-top: 0.5rem;
+  }
+
+  .next-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .next-btn:not(:disabled):hover { opacity: 0.87; }
+
+  .start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: var(--font-ui);
+    margin-top: 0.5rem;
+  }
+
+  .start-btn:hover { opacity: 0.87; }
+
+  .results-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .results-meta {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
+  }
+
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 1rem;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-swatch {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .section-heading {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 1.5rem 0 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 520px) { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  }
+
+  .chart-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 200px;
+  }
+
+  .results-note {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+
+  .export-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: var(--font-ui);
+  }
+
+  .export-btn:hover { background: var(--bg-secondary); }
+
+  .restart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: var(--font-ui);
+  }
+
+  .restart-btn:hover { background: var(--bg-secondary); }
+
+  .participant-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .chip-remove {
+    cursor: pointer;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    line-height: 1;
+    border: none;
+    background: none;
+    padding: 0 2px;
+    font-family: var(--font-ui);
+  }
+
+  .chip-remove:hover { color: var(--text-primary); }
+
+  .n-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--accent-blue-bg);
+    color: var(--accent-blue-text);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <header class="site-header">
+    <span class="site-logo">Categorical Perception Experiment</span>
+    <span style="font-size:12px;color:var(--text-tertiary);">Timothy Schmele · UVic</span>
+  </header>
+
+  <div class="import-zone" id="import-zone">
+    <div class="import-zone-title">Group analysis — view results from multiple participants</div>
+    <div class="import-row">
+      <label class="file-input-label">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 7.293V1.5A.5.5 0 0 1 8 1zM1 14.5A1.5 1.5 0 0 0 2.5 16h11a1.5 1.5 0 0 0 1.5-1.5v-3a.5.5 0 0 0-1 0v3a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 0-1 0v3z"/></svg>
+        Upload data files
+        <input type="file" id="group-file-input" accept=".json" multiple onchange="handleGroupImport(this)">
+      </label>
+      <div class="import-status" id="import-status">No files loaded</div>
+      <button class="view-group-btn" id="view-group-btn" disabled onclick="showGroupResults()">View group results</button>
+    </div>
+    <div class="participant-chips" id="participant-chips"></div>
+  </div>
+
+  <div id="screen-intro" class="screen active">
+    <div class="phase-title">Categorical Perception</div>
+    <p class="phase-desc">This experiment tests how you perceive speech sounds along two continua: <strong>/ba/→/da/</strong> and <strong>/ra/→/la/</strong>. You will complete an identification task and an AXB discrimination task. Your results will be plotted at the end.</p>
+    <div class="info-box">
+      <strong>Identification:</strong> You hear a sound and decide which phoneme it is.<br><br>
+      <strong>AXB Discrimination:</strong> You hear three sounds (A, X, B) and decide whether X sounds more like A or more like B.
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:0.75rem;">Use headphones for best results. All 9 steps × 2 continua will be tested in random order.</p>
+    <button class="start-btn" onclick="startExperiment()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><polygon points="3,2 14,8 3,14"/></svg>
+      Begin experiment
+    </button>
+  </div>
+
+  <div id="screen-id" class="screen">
+    <div class="phase-badge badge-blue">Identification task</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="id-progress"></div></div>
+      <span class="progress-label" id="id-counter"></span>
+    </div>
+    <div class="trial-card">
+      <div class="continuum-label" id="id-continuum-label"></div>
+      <p class="trial-question" id="id-question"></p>
+      <button class="play-btn" id="id-play-btn" onclick="playIdSound()">
+        <div class="play-icon"><svg width="10" height="12" viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg></div>
+        Play sound
+      </button>
+      <div class="choice-grid" id="id-choices"></div>
+    </div>
+    <button class="next-btn" id="id-next" disabled onclick="nextIdTrial()">Continue →</button>
+  </div>
+
+  <div id="screen-axb-intro" class="screen">
+    <div class="phase-badge badge-coral">AXB Discrimination</div>
+    <div class="phase-title">Discrimination task</div>
+    <p class="phase-desc">You will hear <strong>three sounds</strong> in sequence: A, X, and B. Your task is to decide whether the middle sound X is more similar to A or to B.</p>
+    <div class="info-box">Click each button to play A, X, and B. You can replay as many times as you need before answering.</div>
+    <button class="start-btn" onclick="startAXB()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><polygon points="3,2 14,8 3,14"/></svg>
+      Start AXB task
+    </button>
+  </div>
+
+  <div id="screen-axb" class="screen">
+    <div class="phase-badge badge-coral">AXB Discrimination</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="axb-progress"></div></div>
+      <span class="progress-label" id="axb-counter"></span>
+    </div>
+    <div class="trial-card">
+      <div class="continuum-label" id="axb-continuum-label"></div>
+      <p class="trial-question">Play each sound, then decide whether X sounds more like A or B.</p>
+      <div class="axb-stims" id="axb-stims"></div>
+      <div class="choice-grid" id="axb-choices"></div>
+    </div>
+    <button class="next-btn" id="axb-next" disabled onclick="nextAXBTrial()">Continue →</button>
+  </div>
+
+  <div id="screen-results" class="screen">
+    <div class="results-header">
+      <div class="phase-title">Your results</div>
+      <div class="results-meta" id="results-meta"></div>
+    </div>
+    <p class="phase-desc">Categorical perception produces a sharp S-curve in identification and a peak near the category boundary in discrimination.</p>
+
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-swatch" style="background:#3266ad;"></span>/ba/→/da/</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#d85a30;"></span>/ra/→/la/</span>
+    </div>
+
+    <div class="section-heading">Identification — % "second category" response</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">/ba/→/da/</div>
+        <div class="chart-wrap"><canvas id="id-chart-bd" role="img" aria-label="Identification results for ba/da continuum">Ba/da identification data</canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">/ra/→/la/</div>
+        <div class="chart-wrap"><canvas id="id-chart-rl" role="img" aria-label="Identification results for ra/la continuum">Ra/la identification data</canvas></div>
+      </div>
+    </div>
+
+    <div class="section-heading">AXB Discrimination — % correct</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">/ba/→/da/</div>
+        <div class="chart-wrap"><canvas id="axb-chart-bd" role="img" aria-label="AXB discrimination results for ba/da continuum">Ba/da discrimination data</canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">/ra/→/la/</div>
+        <div class="chart-wrap"><canvas id="axb-chart-rl" role="img" aria-label="AXB discrimination results for ra/la continuum">Ra/la discrimination data</canvas></div>
+      </div>
+    </div>
+
+    <p class="results-note">Discrimination x-axis labels show step pairs (e.g. "1–3"). Peaks near the category boundary indicate categorical perception.</p>
+
+    <div class="export-row">
+      <button class="export-btn" onclick="exportData()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 7.293V1.5A.5.5 0 0 1 8 1zM1 14.5A1.5 1.5 0 0 0 2.5 16h11a1.5 1.5 0 0 0 1.5-1.5v-3a.5.5 0 0 0-1 0v3a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 0-1 0v3z"/></svg>
+        Export data (.json)
+      </button>
+      <button class="restart-btn" onclick="restartExperiment()">Restart experiment</button>
+    </div>
+  </div>
+
+  <div id="screen-group" class="screen">
+    <div class="results-header">
+      <div class="phase-title">Group results</div>
+      <div class="results-meta" id="group-meta"></div>
+    </div>
+    <p class="phase-desc">Averaged across all uploaded participant files. Error bars show ±1 standard error of the mean.</p>
+
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-swatch" style="background:#3266ad;"></span>/ba/→/da/</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#d85a30;"></span>/ra/→/la/</span>
+    </div>
+
+    <div class="section-heading">Identification — mean % "second category" response</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">/ba/→/da/</div>
+        <div class="chart-wrap"><canvas id="gid-chart-bd" role="img" aria-label="Group identification results for ba/da">Group ba/da identification</canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">/ra/→/la/</div>
+        <div class="chart-wrap"><canvas id="gid-chart-rl" role="img" aria-label="Group identification results for ra/la">Group ra/la identification</canvas></div>
+      </div>
+    </div>
+
+    <div class="section-heading">AXB Discrimination — mean % correct</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">/ba/→/da/</div>
+        <div class="chart-wrap"><canvas id="gaxb-chart-bd" role="img" aria-label="Group AXB discrimination results for ba/da">Group ba/da discrimination</canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">/ra/→/la/</div>
+        <div class="chart-wrap"><canvas id="gaxb-chart-rl" role="img" aria-label="Group AXB discrimination results for ra/la">Group ra/la discrimination</canvas></div>
+      </div>
+    </div>
+
+    <p class="results-note">Each data point is the mean across participants. Shaded region = ±1 SEM.</p>
+
+    <div class="export-row">
+      <button class="restart-btn" onclick="backToIntro()">← Back</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const BASE = 'https://splab.net/wp/wp-content/uploads/';
+const BD = i => BASE + `u100_isolation_Step0${i+1}.wav`;
+const RL = i => BASE + `u100_syllable0${i+1}.wav`;
+
+const ID_TRIALS = [];
+for(let i=0;i<9;i++) ID_TRIALS.push({continuum:'bd',step:i,url:BD(i)});
+for(let i=0;i<9;i++) ID_TRIALS.push({continuum:'rl',step:i,url:RL(i)});
+shuffle(ID_TRIALS);
+
+const AXB_TRIALS = [];
+for(let i=0;i<7;i++){
+  const coinA=Math.random()<0.5;
+  const A=coinA?i:i+2, X=Math.random()<0.5?i:i+2, B=coinA?i+2:i;
+  AXB_TRIALS.push({continuum:'bd',A,X,B,correct:(X===A)?'A':'B',pairLabel:`${i+1}–${i+3}`,pairIdx:i,urlA:BD(A),urlX:BD(X),urlB:BD(B)});
+}
+for(let i=0;i<7;i++){
+  const coinA=Math.random()<0.5;
+  const A=coinA?i:i+2, X=Math.random()<0.5?i:i+2, B=coinA?i+2:i;
+  AXB_TRIALS.push({continuum:'rl',A,X,B,correct:(X===A)?'A':'B',pairLabel:`${i+1}–${i+3}`,pairIdx:i,urlA:RL(A),urlX:RL(X),urlB:RL(B)});
+}
+shuffle(AXB_TRIALS);
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}}
+
+const idResp = {bd:Array(9).fill(null), rl:Array(9).fill(null)};
+const axbResp = {bd:Array(7).fill(null), rl:Array(7).fill(null)};
+let idIdx=0, axbIdx=0, curAudio=null;
+let groupParticipants = [];
+let activeCharts = [];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function destroyCharts(){
+  activeCharts.forEach(c=>c.destroy());
+  activeCharts=[];
+}
+
+function playAudio(url, btn){
+  if(curAudio){curAudio.pause();curAudio=null;}
+  document.querySelectorAll('.play-btn').forEach(b=>b.classList.remove('playing'));
+  document.querySelectorAll('.stim-btn').forEach(b=>b.classList.remove('playing'));
+  if(btn) btn.classList.add('playing');
+  const a=new Audio(url);
+  curAudio=a;
+  a.play().catch(()=>{});
+  a.onended=()=>{if(btn) btn.classList.remove('playing');};
+}
+
+function startExperiment(){ show('screen-id'); renderIdTrial(); }
+
+function renderIdTrial(){
+  const t=ID_TRIALS[idIdx];
+  const tot=ID_TRIALS.length;
+  document.getElementById('id-counter').textContent=`${idIdx+1} / ${tot}`;
+  document.getElementById('id-progress').style.width=`${(idIdx/tot)*100}%`;
+  const isBD=t.continuum==='bd';
+  document.getElementById('id-continuum-label').textContent=isBD?'/ba/→/da/ continuum':'/ra/→/la/ continuum';
+  document.getElementById('id-question').textContent=isBD?'Which do you hear: /ba/ or /da/?':'Which do you hear: /ra/ or /la/?';
+  const el=document.getElementById('id-choices');
+  el.innerHTML='';
+  (isBD?['/ba/','/da/']:['/ra/','/la/']).forEach(label=>{
+    const b=document.createElement('button');
+    b.className='choice-btn locked';
+    b.textContent=label;
+    b.onclick=()=>{el.querySelectorAll('.choice-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');document.getElementById('id-next').disabled=false;};
+    el.appendChild(b);
+  });
+  document.getElementById('id-play-btn').classList.remove('playing');
+  document.getElementById('id-next').disabled=true;
+}
+
+function playIdSound(){
+  const t=ID_TRIALS[idIdx];
+  playAudio(t.url, document.getElementById('id-play-btn'));
+  document.querySelectorAll('#id-choices .choice-btn').forEach(b=>b.classList.remove('locked'));
+}
+
+function nextIdTrial(){
+  const t=ID_TRIALS[idIdx];
+  const sel=document.querySelector('#id-choices .choice-btn.selected');
+  if(!sel) return;
+  const second=t.continuum==='bd'?'/da/':'/la/';
+  idResp[t.continuum][t.step]=(sel.textContent===second)?1:0;
+  idIdx++;
+  if(idIdx>=ID_TRIALS.length) show('screen-axb-intro');
+  else renderIdTrial();
+}
+
+function startAXB(){ show('screen-axb'); renderAXBTrial(); }
+
+function renderAXBTrial(){
+  const t=AXB_TRIALS[axbIdx];
+  const tot=AXB_TRIALS.length;
+  document.getElementById('axb-counter').textContent=`${axbIdx+1} / ${tot}`;
+  document.getElementById('axb-progress').style.width=`${(axbIdx/tot)*100}%`;
+  document.getElementById('axb-continuum-label').textContent=t.continuum==='bd'?'/ba/→/da/ continuum':'/ra/→/la/ continuum';
+  const stimsEl=document.getElementById('axb-stims');
+  stimsEl.innerHTML='';
+  [{label:'A',url:t.urlA,cls:''},{label:'X',url:t.urlX,cls:'stim-x'},{label:'B',url:t.urlB,cls:''}].forEach((s,i)=>{
+    if(i>0){const sep=document.createElement('span');sep.className='stim-sep';sep.textContent='›';stimsEl.appendChild(sep);}
+    const btn=document.createElement('button');
+    btn.className='stim-btn '+s.cls;
+    btn.innerHTML=`<span class="stim-letter">${s.label}</span><span class="stim-sub">tap to play</span>`;
+    btn.onclick=()=>playAudio(s.url,btn);
+    stimsEl.appendChild(btn);
+  });
+  const choicesEl=document.getElementById('axb-choices');
+  choicesEl.innerHTML='';
+  ['A','B'].forEach(ans=>{
+    const b=document.createElement('button');
+    b.className='choice-btn';
+    b.textContent=`X sounds like ${ans}`;
+    b.onclick=()=>{choicesEl.querySelectorAll('.choice-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');document.getElementById('axb-next').disabled=false;};
+    choicesEl.appendChild(b);
+  });
+  document.getElementById('axb-next').disabled=true;
+}
+
+function nextAXBTrial(){
+  const t=AXB_TRIALS[axbIdx];
+  const sel=document.querySelector('#axb-choices .choice-btn.selected');
+  if(!sel) return;
+  const chosen=sel.textContent.includes(' A')?'A':'B';
+  axbResp[t.continuum][t.pairIdx]=(chosen===t.correct)?1:0;
+  axbIdx++;
+  if(axbIdx>=AXB_TRIALS.length) showResults();
+  else renderAXBTrial();
+}
+
+function showResults(){
+  show('screen-results');
+  const now=new Date();
+  document.getElementById('results-meta').textContent=`Completed ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`;
+  destroyCharts();
+  setTimeout(()=>{
+    const idLabels=['S1','S2','S3','S4','S5','S6','S7','S8','S9'];
+    const axbLabels=['1–3','2–4','3–5','4–6','5–7','6–8','7–9'];
+    const pctBD=idResp.bd.map(v=>v===null?null:Math.round(v*100));
+    const pctRL=idResp.rl.map(v=>v===null?null:Math.round(v*100));
+    const axbBD=axbResp.bd.map(v=>v===null?null:Math.round(v*100));
+    const axbRL=axbResp.rl.map(v=>v===null?null:Math.round(v*100));
+    activeCharts.push(makeLineChart('id-chart-bd',idLabels,pctBD,'#3266ad','rgba(50,102,173,0.08)'));
+    activeCharts.push(makeLineChart('id-chart-rl',idLabels,pctRL,'#d85a30','rgba(216,90,48,0.08)'));
+    activeCharts.push(makeBarChart('axb-chart-bd',axbLabels,axbBD,'rgba(50,102,173,0.5)','#3266ad'));
+    activeCharts.push(makeBarChart('axb-chart-rl',axbLabels,axbRL,'rgba(216,90,48,0.5)','#d85a30'));
+  },50);
+}
+
+function makeLineChart(id,labels,data,color,fill){
+  return new Chart(document.getElementById(id),{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:color,backgroundColor:fill,tension:0.45,pointRadius:4,pointBackgroundColor:color,fill:true,borderWidth:2,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}},x:{ticks:{font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}}}}
+  });
+}
+
+function makeBarChart(id,labels,data,bgColor,borderColor){
+  return new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:bgColor,borderColor,borderWidth:1.5,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}},x:{ticks:{autoSkip:false,font:{size:10}},grid:{display:false}}}}
+  });
+}
+
+function exportData(){
+  const data={
+    version:1,
+    timestamp:new Date().toISOString(),
+    identification:{bd:idResp.bd, rl:idResp.rl},
+    discrimination:{bd:axbResp.bd, rl:axbResp.rl}
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`catperc_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restartExperiment(){
+  window.location.reload();
+}
+
+function backToIntro(){
+  show('screen-intro');
+}
+
+function handleGroupImport(input){
+  const files=Array.from(input.files);
+  if(!files.length) return;
+  let loaded=0;
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const data=JSON.parse(e.target.result);
+        if(data.version===1 && data.identification && data.discrimination){
+          groupParticipants.push({name:f.name,data});
+        }
+      }catch(err){}
+      loaded++;
+      if(loaded===files.length) updateImportUI();
+    };
+    reader.readAsText(f);
+  });
+}
+
+function updateImportUI(){
+  const n=groupParticipants.length;
+  const statusEl=document.getElementById('import-status');
+  const btn=document.getElementById('view-group-btn');
+  const chips=document.getElementById('participant-chips');
+  statusEl.innerHTML=n>0?`<span class="n-badge">N = ${n}</span> participant${n===1?'':' files'} loaded`:'No valid files';
+  btn.disabled=n===0;
+  chips.innerHTML='';
+  groupParticipants.forEach((p,i)=>{
+    const chip=document.createElement('div');
+    chip.className='chip';
+    chip.innerHTML=`${p.name}<button class="chip-remove" onclick="removeParticipant(${i})" title="Remove">×</button>`;
+    chips.appendChild(chip);
+  });
+}
+
+function removeParticipant(idx){
+  groupParticipants.splice(idx,1);
+  updateImportUI();
+}
+
+function showGroupResults(){
+  if(!groupParticipants.length) return;
+  show('screen-group');
+  const n=groupParticipants.length;
+  document.getElementById('group-meta').textContent=`N = ${n} participant${n===1?'':'s'}`;
+  destroyCharts();
+  setTimeout(()=>{
+    const idLabels=['S1','S2','S3','S4','S5','S6','S7','S8','S9'];
+    const axbLabels=['1–3','2–4','3–5','4–6','5–7','6–8','7–9'];
+
+    function meanSEM(matrix,len){
+      const means=[],sems=[];
+      for(let s=0;s<len;s++){
+        const vals=matrix.map(row=>row[s]).filter(v=>v!==null);
+        if(!vals.length){means.push(null);sems.push(0);continue;}
+        const m=vals.reduce((a,b)=>a+b,0)/vals.length;
+        const sem=vals.length>1?Math.sqrt(vals.reduce((a,b)=>a+(b-m)**2,0)/(vals.length*(vals.length-1))):0;
+        means.push(Math.round(m*100));
+        sems.push(Math.round(sem*100));
+      }
+      return{means,sems};
+    }
+
+    const idBD=meanSEM(groupParticipants.map(p=>p.data.identification.bd),9);
+    const idRL=meanSEM(groupParticipants.map(p=>p.data.identification.rl),9);
+    const axBD=meanSEM(groupParticipants.map(p=>p.data.discrimination.bd),7);
+    const axRL=meanSEM(groupParticipants.map(p=>p.data.discrimination.rl),7);
+
+    activeCharts.push(makeGroupLineChart('gid-chart-bd',idLabels,idBD,'#3266ad','rgba(50,102,173,0.08)'));
+    activeCharts.push(makeGroupLineChart('gid-chart-rl',idLabels,idRL,'#d85a30','rgba(216,90,48,0.08)'));
+    activeCharts.push(makeGroupBarChart('gaxb-chart-bd',axbLabels,axBD,'rgba(50,102,173,0.5)','#3266ad'));
+    activeCharts.push(makeGroupBarChart('gaxb-chart-rl',axbLabels,axRL,'rgba(216,90,48,0.5)','#d85a30'));
+  },50);
+}
+
+function makeGroupLineChart(id,labels,{means,sems},color,fill){
+  const upper=means.map((m,i)=>m===null?null:Math.min(100,m+sems[i]));
+  const lower=means.map((m,i)=>m===null?null:Math.max(0,m-sems[i]));
+  return new Chart(document.getElementById(id),{
+    type:'line',
+    data:{labels,datasets:[
+      {data:upper,borderColor:'transparent',backgroundColor:fill.replace('0.08','0.18'),fill:'+1',tension:0.45,pointRadius:0,borderWidth:0},
+      {data:lower,borderColor:'transparent',backgroundColor:fill.replace('0.08','0.18'),fill:false,tension:0.45,pointRadius:0,borderWidth:0},
+      {data:means,borderColor:color,backgroundColor:'transparent',tension:0.45,pointRadius:4,pointBackgroundColor:color,fill:false,borderWidth:2,spanGaps:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}},x:{ticks:{font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}}}}
+  });
+}
+
+function makeGroupBarChart(id,labels,{means,sems},bgColor,borderColor){
+  return new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels,datasets:[{data:means,backgroundColor:bgColor,borderColor,borderWidth:1.5,borderRadius:4,
+      errorBars:sems.map(s=>({plus:s,minus:s}))
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(128,128,128,0.08)'}},x:{ticks:{autoSkip:false,font:{size:10}},grid:{display:false}}}}
+  });
+}
+</script>
+</body>
+</html>
